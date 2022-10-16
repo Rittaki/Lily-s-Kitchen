@@ -3,24 +3,39 @@ package com.recipes.demo;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
+import javax.persistence.*;
+
 import java.util.*;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
+@Entity
 public class Recipe {
+    @Id
+    @GeneratedValue
     @JsonIgnore
-    private int id;
+    private Long id;
     private String name;
     private String description;
     private ArrayList<String> ingredients;
     private ArrayList<String> directions;
 
-    public int getId() {
+    public Recipe() {
+
+    }
+    public Recipe(String name, String description, ArrayList<String> ingredients, ArrayList<String> directions) {
+        this.name = name;
+        this.description = description;
+        this.ingredients = ingredients;
+        this.directions = directions;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -56,4 +71,14 @@ public class Recipe {
         this.directions = directions;
     }
 
+    @Override
+    public String toString() {
+        return "Recipe{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", ingredients=" + ingredients +
+                ", directions=" + directions +
+                '}';
+    }
 }
