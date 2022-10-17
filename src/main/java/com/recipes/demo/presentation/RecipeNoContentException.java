@@ -1,4 +1,4 @@
-package com.recipes.demo;
+package com.recipes.demo.presentation;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

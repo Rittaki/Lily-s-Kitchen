@@ -1,35 +1,38 @@
-package com.recipes.demo;
+package com.recipes.demo.businesslayer;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.util.*;
 
 @Data
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 @Entity
+@Table(name = "Recipes")
 public class Recipe {
     @Id
     @GeneratedValue
     @JsonIgnore
+    @Column
     private Long id;
+    @NotBlank
+    @Column(name = "Name")
     private String name;
+    @NotBlank
+    @Column(name = "Description")
     private String description;
+    @NotEmpty
+    @Column(name = "Ingredients")
     private ArrayList<String> ingredients;
+    @NotEmpty
+    @Column(name = "Directions")
     private ArrayList<String> directions;
-
-    public Recipe() {
-
-    }
-    public Recipe(String name, String description, ArrayList<String> ingredients, ArrayList<String> directions) {
-        this.name = name;
-        this.description = description;
-        this.ingredients = ingredients;
-        this.directions = directions;
-    }
 
     public Long getId() {
         return id;
