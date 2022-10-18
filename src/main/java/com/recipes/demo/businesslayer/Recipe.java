@@ -2,12 +2,13 @@ package com.recipes.demo.businesslayer;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -25,8 +26,15 @@ public class Recipe {
     @Column(name = "Name")
     private String name;
     @NotBlank
+    @Column(name = "Category")
+    private String category;
+    @NotBlank
     @Column(name = "Description")
     private String description;
+    @Column(columnDefinition = "TIMESTAMP", name = "Date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @UpdateTimestamp
+    private LocalDateTime date;
     @NotEmpty
     @Column(name = "Ingredients")
     private ArrayList<String> ingredients;
@@ -56,6 +64,22 @@ public class Recipe {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 
     public ArrayList<String> getIngredients() {

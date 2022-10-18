@@ -4,7 +4,11 @@ import com.recipes.demo.businesslayer.Recipe;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface RecipesRepository extends CrudRepository<Recipe, Long> {
-//    Recipe findRecipeById(Long id);
+//    Optional<Recipe> findRecipeById(Long id);
+    List<Recipe> findByCategoryIgnoreCaseOrderByDateDesc(String category);
 }
