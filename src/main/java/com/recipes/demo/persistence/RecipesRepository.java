@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface RecipesRepository extends CrudRepository<Recipe, Long> {
 //    Optional<Recipe> findRecipeById(Long id);
     List<Recipe> findByCategoryIgnoreCaseOrderByDateDesc(String category);
+    List<Recipe> findByNameContainingIgnoreCaseOrderByDateDesc(String name);
 }

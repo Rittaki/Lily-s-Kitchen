@@ -3,6 +3,8 @@ package com.recipes.demo.presentation;
 import com.recipes.demo.businesslayer.Recipe;
 import com.recipes.demo.businesslayer.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -11,11 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/recipe")
 public class RecipeController {
     @Autowired
     RecipeService service;
 
-    @GetMapping("/api/recipe/{id}")
+    @GetMapping("/{id}")
     public Recipe getRecipe(@PathVariable Long id) {
         var recipe = service.findRecipeById(id);
         if (recipe.isPresent()) {
@@ -25,14 +28,22 @@ public class RecipeController {
             throw new RecipeNotFoundException("Recipe not found for id = " + id);
         }
     }
-    @GetMapping("/api/recipe/search")
+    @GetMapping("/search")
     @ResponseBody
-    public List<Recipe> searchRecipe(@RequestParam(name = "category") String c,
-                                     @RequestParam String category) {
-        return service.recipesByCategory(category);
+    public ResponseEntity<List<Recipe>> searchRecipe(@RequestParam(name = "category", required = false) String c,
+                                                     @RequestParam(name = "name", required = false) String n) {
+        if (!(c == null)) {
+            return new ResponseEntity<>(service.recipesByCategory(c), HttpStatus.OK);
+        }
+        else if (!(n == null)) {
+            return new ResponseEntity<>(service.recipesByContainingInName(n), HttpStatus.OK);
+        }
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @PutMapping("/api/recipe/{id}")
+    @PutMapping("/{id}")
     public void updateRecipe(@Valid @RequestBody Recipe recipe, @PathVariable Long id) {
         var currentRecipe = service.findRecipeById(id);
         if (currentRecipe.isPresent()) {
@@ -47,12 +58,12 @@ public class RecipeController {
         }
     }
 
-    @PostMapping("/api/recipe/new")
+    @PostMapping("/new")
     public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe) {
         Long idx = service.saveRecipe(recipe).getId();
         return Map.of("id", idx);
     }
-    @DeleteMapping("/api/recipe/{id}")
+    @DeleteMapping("/{id}")
     public void deleteRecipe(@PathVariable Long id) {
         var recipe = service.findRecipeById(id);
         if (recipe.isPresent()) {

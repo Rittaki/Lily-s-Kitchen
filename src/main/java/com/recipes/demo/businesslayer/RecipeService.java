@@ -31,4 +31,8 @@ public class RecipeService {
     public List<Recipe> recipesByCategory(String cat) {
         return recipesRepository.findByCategoryIgnoreCaseOrderByDateDesc(cat);
     }
+
+    public List<Recipe> recipesByContainingInName(String name) {
+        return recipesRepository.findByNameContainingIgnoreCaseOrderByDateDesc(name);
+    }
 }
