@@ -1,10 +1,11 @@
 package com.recipes.demo.presentation;
 
-import com.recipes.demo.businesslayer.Recipe;
-import com.recipes.demo.businesslayer.RecipeService;
+import com.recipes.demo.businesslayer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,6 +18,8 @@ import java.util.Map;
 public class RecipeController {
     @Autowired
     RecipeService service;
+    @Autowired
+    UserService userService;
 
     @GetMapping("/{id}")
     public Recipe getRecipe(@PathVariable Long id) {
@@ -59,8 +62,15 @@ public class RecipeController {
     }
 
     @PostMapping("/new")
-    public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe) {
-        Long idx = service.saveRecipe(recipe).getId();
+    public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe,
+                                        @AuthenticationPrincipal UserDetails currentUser) {
+        User user = userService.findUserByEmail(currentUser.getUsername()).get();
+        recipe.setUser(user);
+//        Recipe newRecipe = new Recipe(recipe.getId(), recipe.getName(), recipe.getCategory(),
+//                recipe.getDescription(), recipe.getDate(), recipe.getIngredients(), recipe.getDirections(), user);
+        Recipe recivedRecipe = service.saveRecipe(recipe);
+        Long idx = recivedRecipe.getId();
+        user.getRecipes().add(recivedRecipe);
         return Map.of("id", idx);
     }
     @DeleteMapping("/{id}")
@@ -74,4 +84,13 @@ public class RecipeController {
             throw new RecipeNotFoundException("Recipe not found for id = " + id);
         }
     }
+
+//    @PostMapping("/register")
+//    public void register(@RequestBody User user) {
+//        // input validation omitted for brevity
+//
+//        user.setPassword(encoder.encode(user.getPassword()));
+//
+//        userRepo.save(user);
+//    }
 }

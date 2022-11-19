@@ -41,6 +41,9 @@ public class Recipe {
     @NotEmpty
     @Column(name = "Directions")
     private ArrayList<String> directions;
+    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Long getId() {
         return id;
@@ -96,6 +99,14 @@ public class Recipe {
 
     public void setDirections(ArrayList<String> directions) {
         this.directions = directions;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
