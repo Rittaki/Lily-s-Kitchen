@@ -23,8 +23,4 @@ public class UserService {
     public User saveUser(User user) {
         return userRepository.save(user);
     }
-
-//    public void deleteUser(String email) {
-//        userRepository.delete(userRepository.findByEmail(email).get());
-//    }
 }

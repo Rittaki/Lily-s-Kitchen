@@ -42,6 +42,7 @@ public class Recipe {
     @Column(name = "Directions")
     private ArrayList<String> directions;
     @ManyToOne
+    @JsonIgnore
 //    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
