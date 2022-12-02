@@ -4,18 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 @Entity
 @Table(name = "Users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue
     @JsonIgnore
@@ -39,7 +42,29 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Recipe> recipes = new ArrayList<>();
 
+    public User() {
+
+    }
+    public User(User user) {
+        email = user.getEmail();
+        password = user.getPassword();
+    }
+
+//    private final List<GrantedAuthority> rolesAndAuthorities = List.of();;
+
     // constructors, getters and setters
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> roles = List.of();
+        return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
     public String getEmail() {
         return email;
@@ -49,6 +74,7 @@ public class User {
         this.email = email;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -71,5 +97,26 @@ public class User {
 
     public void setRecipes(List<Recipe> recipes) {
         this.recipes = recipes;
+    }
+
+    // 4 remaining methods that just return true
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
