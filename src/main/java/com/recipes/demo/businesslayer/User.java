@@ -15,7 +15,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "Users")
 public class User implements UserDetails {
@@ -42,13 +42,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Recipe> recipes = new ArrayList<>();
 
-    public User() {
 
-    }
-    public User(User user) {
-        email = user.getEmail();
-        password = user.getPassword();
-    }
 
 //    private final List<GrantedAuthority> rolesAndAuthorities = List.of();;
 
