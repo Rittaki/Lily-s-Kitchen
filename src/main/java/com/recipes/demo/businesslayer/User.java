@@ -1,5 +1,6 @@
 package com.recipes.demo.businesslayer;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,12 +36,14 @@ public class User implements UserDetails {
     @Size(min = 8, message
             = "Password must be at least 8 characters")
     @Column(name = "password")
+    @JsonIgnore
     private String password;
     @Column(name = "role")
     private String role; // should be prefixed with ROLE_
 
-    @OneToMany(mappedBy = "user")
-    private List<Recipe> recipes = new ArrayList<>();
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+//    @JsonBackReference("user-id")
+//    private List<Recipe> recipes = new ArrayList<>();
 
 
 
@@ -85,13 +88,13 @@ public class User implements UserDetails {
         this.role = roles;
     }
 
-    public List<Recipe> getRecipes() {
-        return recipes;
-    }
-
-    public void setRecipes(List<Recipe> recipes) {
-        this.recipes = recipes;
-    }
+//    public List<Recipe> getRecipes() {
+//        return recipes;
+//    }
+//
+//    public void setRecipes(List<Recipe> recipes) {
+//        this.recipes = recipes;
+//    }
 
     // 4 remaining methods that just return true
     @Override

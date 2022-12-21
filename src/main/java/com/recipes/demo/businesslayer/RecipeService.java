@@ -20,6 +20,9 @@ public class RecipeService {
         return recipesRepository.findById(id);
     }
 
+    public List<Recipe> getRecipes() {
+        return recipesRepository.findAll();
+    }
     public Recipe saveRecipe(Recipe recipe) {
         return recipesRepository.save(recipe);
     }

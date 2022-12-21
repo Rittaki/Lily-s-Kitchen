@@ -19,7 +19,7 @@ import java.util.*;
 public class Recipe {
     @Id
     @GeneratedValue
-    @JsonIgnore
+//    @JsonIgnore
     @Column
     private Long id;
     @NotBlank
@@ -41,8 +41,9 @@ public class Recipe {
     @NotEmpty
     @Column(name = "Directions")
     private ArrayList<String> directions;
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(optional = false)
+//    @JsonManagedReference("user-id")
+//    @JsonIgnore
 //    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

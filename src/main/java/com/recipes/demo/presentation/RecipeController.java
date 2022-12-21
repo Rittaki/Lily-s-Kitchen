@@ -47,6 +47,11 @@ public class RecipeController {
         }
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Recipe>> allRecipes(@AuthenticationPrincipal UserDetails user) {
+        return new ResponseEntity<>(service.getRecipes(), HttpStatus.OK);
+    }
+
     @PutMapping("/{id}")
     public void updateRecipe(@Valid @RequestBody Recipe recipe, @PathVariable Long id,
                              @AuthenticationPrincipal UserDetails currentUser) {
@@ -68,15 +73,28 @@ public class RecipeController {
     }
 
     @PostMapping("/new")
-    public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe,
+//    public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe,
+//                                        @AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<Recipe> postRecipe(@Valid @RequestBody Recipe recipe,
                                         @AuthenticationPrincipal UserDetails currentUser) {
         User user = userService.findUserByEmail(currentUser.getUsername()).get();
         recipe.setUser(user);
         Recipe recivedRecipe = service.saveRecipe(recipe);
         Long idx = recivedRecipe.getId();
-        user.getRecipes().add(recivedRecipe);
-        return Map.of("id", idx);
+//        user.getRecipes().add(recivedRecipe);
+//        return Map.of("id", idx);
+        return new ResponseEntity<>(recivedRecipe, HttpStatus.OK);
     }
+
+    @PostMapping("/stam")
+    public ResponseEntity<Recipe> stam(@AuthenticationPrincipal UserDetails currentUser) {
+        Recipe recipe = new Recipe();
+        User user = userService.findUserByEmail(currentUser.getUsername()).get();
+        recipe.setId(7L);
+        recipe.setUser(user);
+        return new ResponseEntity<>(recipe, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteRecipe(@PathVariable Long id,
                              @AuthenticationPrincipal UserDetails currentUser) {
