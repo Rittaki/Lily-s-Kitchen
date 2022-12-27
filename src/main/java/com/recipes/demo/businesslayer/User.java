@@ -46,16 +46,24 @@ public class User implements UserDetails {
 //    private List<Recipe> recipes = new ArrayList<>();
 
 
-
-//    private final List<GrantedAuthority> rolesAndAuthorities = List.of();;
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+//    private final List<GrantedAuthority> rolesAndAuthorities = new ArrayList<>();
 
     // constructors, getters and setters
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> roles = List.of();
+        List<GrantedAuthority> roles = new ArrayList<>();
         return roles;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

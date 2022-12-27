@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +53,15 @@ public class RecipeController {
         return new ResponseEntity<>(service.getRecipes(), HttpStatus.OK);
     }
 
+    @GetMapping("/allMine")
+    public ResponseEntity<List<Recipe>> allMineRecipes(@AuthenticationPrincipal UserDetails currentUser) {
+        User user = userService.findUserByEmail(currentUser.getUsername()).get();
+        Long id = user.getId();
+        return new ResponseEntity<>(service.getMyRecipes(id), HttpStatus.OK);
+    }
+
     @PutMapping("/{id}")
-    public void updateRecipe(@Valid @RequestBody Recipe recipe, @PathVariable Long id,
+    public ResponseEntity<?> updateRecipe(@Valid @RequestBody Recipe recipe, @PathVariable Long id,
                              @AuthenticationPrincipal UserDetails currentUser) {
         var currentRecipe = service.findRecipeById(id);
         User user = userService.findUserByEmail(currentUser.getUsername()).get();
@@ -64,8 +72,12 @@ public class RecipeController {
             LocalDateTime now = LocalDateTime.now();
             recipe.setId(id);
             recipe.setDate(now);
+            recipe.setUser(user);
             service.saveRecipe(recipe);
-            throw new RecipeNoContentException("Updated for id = " + id);
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("message", "Updated for id = " + id);
+            return new ResponseEntity<>(body, HttpStatus.OK);
+//            throw new RecipeNoContentException("Updated for id = " + id);
         }
         else {
             throw new RecipeNotFoundException("Recipe not found for id = " + id);

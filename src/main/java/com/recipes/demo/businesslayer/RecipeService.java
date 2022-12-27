@@ -23,6 +23,9 @@ public class RecipeService {
     public List<Recipe> getRecipes() {
         return recipesRepository.findAll();
     }
+    public List<Recipe> getMyRecipes(Long id) {
+        return recipesRepository.findAllByUserId(id);
+    }
     public Recipe saveRecipe(Recipe recipe) {
         return recipesRepository.save(recipe);
     }
@@ -38,4 +41,5 @@ public class RecipeService {
     public List<Recipe> recipesByContainingInName(String name) {
         return recipesRepository.findByNameContainingIgnoreCaseOrderByDateDesc(name);
     }
+
 }
