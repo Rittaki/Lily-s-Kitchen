@@ -35,11 +35,16 @@ public class Recipe {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp
     private LocalDateTime date;
+
+    @NotEmpty
+    @Column(name = "Image")
+    private String image;
     @NotEmpty
     @Column(name = "Ingredients")
     private ArrayList<String> ingredients;
     @NotEmpty
-    @Column(name = "Directions")
+    @Lob
+    @Column(name = "Directions", length=10485760)
     private ArrayList<String> directions;
     @ManyToOne(optional = false)
 //    @JsonManagedReference("user-id")
@@ -109,6 +114,14 @@ public class Recipe {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

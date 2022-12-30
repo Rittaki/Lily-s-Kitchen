@@ -3,6 +3,7 @@ package com.recipes.demo.presentation;
 import com.recipes.demo.businesslayer.User;
 import com.recipes.demo.dto.AuthCredentialsRequest;
 import com.recipes.demo.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -33,12 +36,10 @@ public class AuthController {
                 .authenticate(
                     new UsernamePasswordAuthenticationToken(
                         request.getUsername(), request.getPassword()
-
                     )
                 );
 
             User user = (User) authenticate.getPrincipal();
-
             return ResponseEntity.ok()
                 .header(
                     HttpHeaders.AUTHORIZATION,
@@ -47,6 +48,17 @@ public class AuthController {
                 .body(user);
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestParam String token,
+                                           @AuthenticationPrincipal UserDetails user) {
+        try {
+            Boolean isTokenValid = jwtUtil.validateToken(token, user);
+            return ResponseEntity.ok(isTokenValid);
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.ok(false);
         }
     }
 }
