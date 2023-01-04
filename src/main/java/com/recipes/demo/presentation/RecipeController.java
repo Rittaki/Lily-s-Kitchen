@@ -2,15 +2,21 @@ package com.recipes.demo.presentation;
 
 import com.recipes.demo.businesslayer.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +24,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/recipe")
 public class RecipeController {
+    @Value("${uploadDir}")
+    private String uploadFolder;
+//    public static String uploadDirectory = System.getProperty("user.dir") + "/uploads";
     @Autowired
     RecipeService service;
     @Autowired
     UserService userService;
+    @Autowired
+    FileDataService fileDataService;
 
     @GetMapping("/{id}")
     public Recipe getRecipe(@PathVariable Long id) {
@@ -46,6 +57,14 @@ public class RecipeController {
         else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<?> downloadFile(@RequestParam(name = "filename") String fileName) throws IOException {
+        FileData file = fileDataService.findFileByName(fileName).get();
+        String type = file.getType();
+        byte[] fileData = fileDataService.downloadFile(fileName);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(type)).body(fileData);
     }
 
     @GetMapping("/all")
@@ -88,23 +107,46 @@ public class RecipeController {
 //    public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe,
 //                                        @AuthenticationPrincipal UserDetails currentUser) {
     public ResponseEntity<Recipe> postRecipe(@Valid @RequestBody Recipe recipe,
-                                        @AuthenticationPrincipal UserDetails currentUser) {
+//            @RequestParam(name = "name", required = false) String nam,
+//                                             @RequestParam(name = "category", required = false) String category,
+//                                             @RequestParam(name = "description", required = false) String description,
+//                                             @RequestParam(name = "directions", required = false) ArrayList<String> directions,
+//                                             @RequestParam(name = "ingredients", required = false) ArrayList<String> ingredients,
+//                                        @RequestParam(name = "file", required = false) MultipartFile file,
+                                        @AuthenticationPrincipal UserDetails currentUser
+
+    ) {
         User user = userService.findUserByEmail(currentUser.getUsername()).get();
         recipe.setUser(user);
+//        if (recipe.getImage() == null) {
+//            recipe.setImage("no-image.png");
+//        }
         Recipe recivedRecipe = service.saveRecipe(recipe);
-        Long idx = recivedRecipe.getId();
+//        Long idx = recivedRecipe.getId();
 //        user.getRecipes().add(recivedRecipe);
 //        return Map.of("id", idx);
         return new ResponseEntity<>(recivedRecipe, HttpStatus.OK);
+//        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/stam")
-    public ResponseEntity<Recipe> stam(@AuthenticationPrincipal UserDetails currentUser) {
-        Recipe recipe = new Recipe();
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>("file uploaded", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/stam", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Recipe> stam(@RequestPart("file") MultipartFile file,
+                                       @RequestPart("recipe") String rec,
+                                       @AuthenticationPrincipal UserDetails currentUser) throws IOException {
+        Recipe recipe = service.getJson(rec);
+//        Recipe recipe = new Recipe();
         User user = userService.findUserByEmail(currentUser.getUsername()).get();
-        recipe.setId(7L);
+//        recipe.setId(7L);
         recipe.setUser(user);
-        return new ResponseEntity<>(recipe, HttpStatus.OK);
+        String filePath = fileDataService.uploadFile(file);
+        recipe.setFileData(filePath);
+        Recipe recivedRecipe = service.saveRecipe(recipe);
+        return new ResponseEntity<>(recivedRecipe, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -2,6 +2,7 @@ package com.recipes.demo.businesslayer;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -36,9 +37,15 @@ public class Recipe {
     @UpdateTimestamp
     private LocalDateTime date;
 
-    @NotEmpty
-    @Column(name = "Image")
-    private String image;
+//    @Column(name = "Image")
+//    private String image;
+
+//    @Column(name = "ImagePath")
+//    private String imagePath;
+    @Lob
+    @Column(name = "imagee", length = 1000)
+//    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] image;
     @NotEmpty
     @Column(name = "Ingredients")
     private ArrayList<String> ingredients;
@@ -51,6 +58,8 @@ public class Recipe {
 //    @JsonIgnore
 //    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    private String fileData;
 
     public Long getId() {
         return id;
@@ -116,12 +125,35 @@ public class Recipe {
         this.user = user;
     }
 
-    public String getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(byte[] image) {
         this.image = image;
+    }
+//    public String getImage() {
+//        return image;
+//    }
+//
+//    public void setImage(String image) {
+//        this.image = image;
+//    }
+
+//    public String getImagePath() {
+//        return imagePath;
+//    }
+//
+//    public void setImagePath(String imagePath) {
+//        this.imagePath = imagePath;
+//    }
+
+    public String getFileData() {
+        return fileData;
+    }
+
+    public void setFileData(String fileData) {
+        this.fileData = fileData;
     }
 
     @Override

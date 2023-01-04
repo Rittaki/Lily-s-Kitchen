@@ -1,9 +1,12 @@
 package com.recipes.demo.businesslayer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipes.demo.persistence.RecipesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,4 +45,15 @@ public class RecipeService {
         return recipesRepository.findByNameContainingIgnoreCaseOrderByDateDesc(name);
     }
 
+    public Recipe getJson(String rec) {
+        Recipe recipeJson = new Recipe();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            recipeJson = objectMapper.readValue(rec, Recipe.class);
+        } catch (IOException err) {
+            System.out.printf("Error", err.toString());
+        }
+
+        return recipeJson;
+    }
 }
